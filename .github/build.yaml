@@ -1,0 +1,43 @@
+name: build
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+#   push:
+#     paths:
+#       - 'speed_couple/scripts/version_config.sh'
+#     branches:
+#       - master
+#       - develop
+#       - feature/develop_build
+
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      TELE_CHANNEL_ID: -796535322
+    steps:
+   # Check out source code
+    - name: Checkout Source Code
+      uses: actions/checkout@v2
+    - uses: subosito/flutter-action@v2
+      with:
+      flutter-version: '3.3.3'
+      channel: 'stable'
+    - uses: actions/setup-java@v3
+      with:
+      distribution: 'zulu' # See 'Supported distributions' for available options
+      java-version: '17'
+    - name: flutter doctor
+      run: flutter doctor
+    - name: pub get
+      run: flutter pub get
+    - name: build
+      run: flutter build apk
+    - uses: actions/upload-artifact@v3
+      with:
+      name: my-artifact
+      path: ./build/app/outputs/flutter-apk/app-release.apk
